@@ -23,11 +23,12 @@ public class GameManager : MonoBehaviour {
     public bool[] IsChangeDir = new bool[20];
 
     Vector3 beforePos,
-    startPos = new Vector3(-0.8f, -1.5f, 0),
-    leftPos = new Vector3(-0.8f, 0.4f, 0),
-    rightPos = new Vector3(0.8f, 0.4f, 0),
-    leftDir = new Vector3(0.8f, -0.4f, 0),
-    rightDir = new Vector3(-0.8f, -0.4f, 0);
+    //startPos = new Vector3(-0.8f, -1.5f, 0),
+    startPos = new Vector3(-0.8f, -2.3f, 0),
+    leftPos = new Vector3(-0.8f, -0.4f, 0),
+    rightPos = new Vector3(0.8f, -0.4f, 0),
+    leftDir = new Vector3(0.8f, 0.4f, 0),
+    rightDir = new Vector3(-0.8f, 0.4f, 0);
 
     enum State { start, leftDir, rightDir }
     State state = State.start;
@@ -40,7 +41,7 @@ public class GameManager : MonoBehaviour {
         StairsInit();
         GaugeReduce();
         StartCoroutine("CheckGauge");
-
+       
         UI[0].SetActive(dslManager.IsRetry());
         UI[1].SetActive(!dslManager.IsRetry());        
     }
@@ -114,7 +115,7 @@ public class GameManager : MonoBehaviour {
 
         //Move the stairs below a certain height
         for (int i = 0; i < 20; i++)
-            if (stairs[i].transform.position.y < -5) SpawnStair(i);
+            if (stairs[i].transform.position.y > 5) SpawnStair(i);
 
         //Game over if climbing stairs is wrong
         if(IsChangeDir[stairIndex] != isChange) {
@@ -125,8 +126,8 @@ public class GameManager : MonoBehaviour {
         //Score Update & Gauge Increase
         scoreText.text = (++score).ToString();
         gauge.fillAmount += 0.7f ;
-        backGround.transform.position += backGround.transform.position.y < -14f ?
-            new Vector3(0, 4.7f, 0) : new Vector3(0, -0.05f, 0);
+        backGround.transform.position += backGround.transform.position.y > 14f ?
+            new Vector3(0, 4.7f, 0) : new Vector3(0, 0.05f, 0);
     }
 
 
@@ -151,7 +152,7 @@ public class GameManager : MonoBehaviour {
         while (gauge.fillAmount != 0) {
             yield return new WaitForSeconds(0.4f);
         }
-        GameOver();
+        //GameOver();
     }
 
 
@@ -189,8 +190,16 @@ public class GameManager : MonoBehaviour {
 
     public void BtnDown(GameObject btn) {
         btn.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
-        if (btn.name == "ClimbBtn")  player.Climb(false);
+        if (btn.name == "ClimbBtn") player.Climb(false);
         else if (btn.name == "ChangeDirBtn") player.Climb(true);
+        else if (btn.name == "MoveLeftBtn")
+        {
+            player.Climb(!player.isleft);
+        }
+        else if (btn.name == "MoveRightBtn")
+        {
+            player.Climb(player.isleft);
+        }
     }
 
 
